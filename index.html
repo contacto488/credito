@@ -174,7 +174,7 @@ img.visor { max-width: 100%; height: auto; display: block; margin: 0 auto; borde
 // 1. CATÁLOGOS Y UTILIDADES
 // ===================================================================================================
 const { html, render, useState, useEffect, useMemo, useRef, useCallback } = window.UI;
-const VERSION = 'v2.0 · 2026-11-26'; // sello de versión: si no ve este número, está en una versión vieja (caché)
+const VERSION = 'v2.0.1 · 2026-11-26'; // sello de versión: si no ve este número, está en una versión vieja (caché)
 
 const ROLES = {
   administrador: 'Administrador',
@@ -369,8 +369,11 @@ function textoError(e) {
   if (/requires-recent-login/i.test(c)) return 'Por seguridad, cierre la sesión, vuelva a entrar y repita el cambio.';
   if (/network|unavailable|failed to fetch|offline/i.test(c)) return 'No hay conexión con la base de datos. Revise el internet e inténtelo de nuevo.';
   if (/operation-not-allowed/i.test(c)) return 'El inicio de sesión con correo y contraseña no está activado en Firebase (Paso 2 de la guía).';
-  if (/not-found/i.test(c)) return 'Ese registro ya no existe.';
-  return (e && e.mensaje) || 'No se pudo completar la acción. ' + (c ? '(' + c + ')' : '');
+  if (/configuration-not-found/i.test(c)) return 'El inicio de sesión de Firebase todavía no está activado. En la consola de Firebase abra Authentication, pulse Comenzar y active Correo electrónico/contraseña (Paso 2 de la guía).';
+  if (/api-key|invalid-api/i.test(c)) return 'La clave del archivo configuracion.js no es válida. Vuelva a copiar la configuración de Firebase (Paso 4 de la guía).';
+  if (c === 'not-found' && /database/i.test((e && e.message) || '')) return 'No se encontró la base de datos Firestore del proyecto. Debe existir y llamarse (default) (Paso 3 de la guía).';
+  if (c === 'not-found') return 'Ese registro ya no existe.';
+  return (e && e.mensaje) || 'No se pudo completar la acción. ' + (c ? '(Código: ' + String(c).slice(0, 120) + ')' : '');
 }
 const fallo = (mensaje) => Object.assign(new Error(mensaje), { mensaje });
 
